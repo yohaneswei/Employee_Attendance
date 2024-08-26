@@ -56,7 +56,7 @@ CREATE TABLE `karyawan` (
 --
 
 INSERT INTO `karyawan` (`id_karyawan`, `is_admin`, `username`, `password`, `nama`, `alamat`, `no_telp`, `status`) VALUES
-(1, 1, 'root', '$2a$12$fAEz9o.ysZWALwPnzIo/s.mYQqRxrPgaXGYCFqhYHiaV/DRmqdwxy', 'User1', 'jl xyz', '123456789', 1);
+(1, 1, 'root', '$2a$12$fAEz9o.ysZWALwPnzIo/s.mYQqRxrPgaXGYCFqhYHiaV/DRmqdwxy', 'root', 'jl xyz', '123456789', 1);
 
 --
 -- Indexes for dumped tables

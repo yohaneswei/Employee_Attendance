@@ -1,7 +1,10 @@
-module.exports = (con, express, authenticateToken) => {
+module.exports = (con, express) => {
     const router = express.Router();
     const bcrypt = require('bcrypt');
     const jwt = require('jsonwebtoken');
+    const { body, validationResult } = require('express-validator');
+    const authenticateToken = require('../middlewares/authMiddleware');
+    const handleValidationErrors = require('../middlewares/validationMiddleware');
 
     //generate jwt
     function generateAccessToken(payload) {
@@ -12,7 +15,13 @@ module.exports = (con, express, authenticateToken) => {
         res.json({ message: "tes" })
     })
 
-    router.post('/login', (req, res) => {
+    router.post('/login', [
+        body('username')
+            .notEmpty().withMessage('Username tidak boleh kosong!'),
+        body('password')
+            .notEmpty().withMessage('Password tidak boleh kosong!')
+    ], handleValidationErrors, (req, res) => {
+
         try {
             con.query(
                 "SELECT * FROM karyawan WHERE username = ?",
@@ -52,7 +61,25 @@ module.exports = (con, express, authenticateToken) => {
         }
     })
 
-    router.post('/change-password/:id', authenticateToken, async (req, res) => {
+    router.put('/change-password/:id', [
+        body('password')
+            .notEmpty().withMessage('Username tidak boleh kosong!'),
+        body('newPassword')
+            .notEmpty().withMessage('Password Baru tidak boleh kosong!'),
+        body('confirmPassword')
+            .notEmpty().withMessage('Password Confirm tidak boleh kosong!')
+    ], handleValidationErrors, authenticateToken, async (req, res) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            const firstError = errors.array()[0].msg;
+
+            return res.json({
+                message: firstError,
+                success: false
+            });
+        }
+
         const { password, newPassword, confirmPassword } = req.body;
 
         if (newPassword !== confirmPassword) {

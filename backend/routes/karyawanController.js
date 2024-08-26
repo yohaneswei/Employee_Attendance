@@ -1,6 +1,9 @@
-module.exports = (con, express, authenticateToken) => {
+module.exports = (con, express) => {
     const router = express.Router();
     const bcrypt = require('bcrypt');
+    const { body, validationResult } = require('express-validator');
+    const authenticateToken = require('../middlewares/authMiddleware');
+    const handleValidationErrors = require('../middlewares/validationMiddleware');
 
     router.post('/detail-karyawan', authenticateToken, (req, res) => {
         try {
@@ -45,7 +48,15 @@ module.exports = (con, express, authenticateToken) => {
         }
     });
 
-    router.post('/add-karyawan', authenticateToken, async (req, res) => {
+    router.post('/add-karyawan', [
+        body('nama')
+            .notEmpty().withMessage('Nama tidak boleh kosong!'),
+        body('alamat')
+            .notEmpty().withMessage('Alamat tidak boleh kosong!'),
+        body('no_telp')
+            .notEmpty().withMessage('Nomor Telepon tidak boleh kosong!')
+        // .matches(/^08\d{8,13}$/).withMessage('Nomor telepon harus dimulai dengan 08 dan diikuti oleh 8 hingga 13 digit.')
+    ], handleValidationErrors, authenticateToken, async (req, res) => {
         try {
             con.query(
                 "SELECT * FROM karyawan WHERE username = ?",
@@ -77,7 +88,8 @@ module.exports = (con, express, authenticateToken) => {
                                     console.error('Error inserting data:', err);
                                     return res.json({ message: 'Error inserting data', success: false });
                                 }
-                                res.json({ message: 'Karyawan berhasil ditambahkan!', success: true });
+
+                                res.json({ message: 'Karyawan berhasil ditambahkan!', success: true, id: results.insertId });
                             }
                         );
                     } catch (err) {
@@ -93,7 +105,27 @@ module.exports = (con, express, authenticateToken) => {
         }
     });
 
-    router.put('/update-karyawan/:id', authenticateToken, (req, res) => {
+    router.put('/update-karyawan/:id', [
+        body('nama')
+            .notEmpty().withMessage('Nama tidak boleh kosong!'),
+        body('alamat')
+            .notEmpty().withMessage('Alamat tidak boleh kosong!'),
+        body('no_telp')
+            .notEmpty().withMessage('Nomor Telepon tidak boleh kosong!'),
+        body('status')
+            .notEmpty().withMessage('Status tidak boleh kosong!'),
+    ], authenticateToken, (req, res) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            const firstError = errors.array()[0].msg;
+
+            return res.json({
+                message: firstError,
+                success: false
+            });
+        }
+
         try {
             con.query(
                 "SELECT * FROM karyawan WHERE id_karyawan = ?",

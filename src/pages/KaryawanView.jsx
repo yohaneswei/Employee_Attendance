@@ -14,6 +14,28 @@ const KaryawanView = () => {
         year: 'numeric'
     });
 
+    const now = new Date();
+
+    const getOpenHour = () => {
+        const start = new Date();
+
+        start.setHours(8, 0, 0);
+
+        return start;
+    }
+
+    const getCloseHour = () => {
+        const end = new Date();
+
+        end.setHours(17, 0, 0);
+
+        return end;
+    }
+
+    const handleTimeAbsent = () => {
+        return now >= getOpenHour() && now <= getCloseHour();
+    };
+
     return (
         <Box sx={{ height: '100%' }}>
             <Paper elevation={6} sx={{ padding: 4 }}>
@@ -24,14 +46,27 @@ const KaryawanView = () => {
                     Tanggal: {formattedDate}
                 </Typography>
                 {
-                    !isFetching && (
-                        cekAbsensi.result ?
-                            <Box sx={{ textAlign: 'center' }}>Anda sudah melakukan absensi hari ini</Box>
-                            :
-                            <Upload ButtonName="Absen" ButtonColor="primary" />
-                    )
+                    handleTimeAbsent() ?
+                        !isFetching && (
+                            cekAbsensi.result ?
+                                <Box sx={{ textAlign: 'center' }}>Anda sudah melakukan absensi hari ini.</Box>
+                                :
+                                <Upload ButtonName="Absen" ButtonColor="primary" />
+                        )
+                        :
+                        <Box sx={{ textAlign: 'center' }}>
+                            Absensi Hari ini{" "}
+                            {now < getOpenHour() ?
+                                "belum dibuka."
+                                :
+                                now > getCloseHour() ?
+                                    "sudah ditutup."
+                                    :
+                                    "belum tersedia."
+                            }
+                        </Box>
                 }
-            </Paper>
+            </Paper>{console.log(currentDate === now ? true : false)}
         </Box>
     )
 };

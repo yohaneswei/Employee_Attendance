@@ -133,7 +133,7 @@ const DialogFormKaryawan = ({ open, handleClose, isEdit, formData, updateData, n
     const handleAdd = async (karyawan) => {
         const { nama, alamat, no_telp } = karyawan
 
-        const { message, success } = await handleAddKaryawan({
+        const { message, success, id } = await handleAddKaryawan({
             nama: nama,
             alamat: alamat,
             no_telp: no_telp
@@ -141,7 +141,7 @@ const DialogFormKaryawan = ({ open, handleClose, isEdit, formData, updateData, n
 
         if (success) {
             Alert('success', message)
-            updateData(prevEmployee => [...prevEmployee, { ...karyawan, id: prevEmployee.length + 1 }]);
+            updateData(prevEmployee => [...prevEmployee, { ...karyawan, id: id }]);
         } else {
             Alert('error', message)
         }

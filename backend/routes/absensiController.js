@@ -1,7 +1,8 @@
-module.exports = (con, express, authenticateToken) => {
+module.exports = (con, express) => {
     const router = express.Router();
     const multer = require('multer');
     const path = require('path');
+    const authenticateToken = require('../middlewares/authMiddleware');
 
     // Set up multer for file uploads
     const storage = multer.diskStorage({

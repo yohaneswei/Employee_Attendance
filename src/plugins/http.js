@@ -1,5 +1,32 @@
 import { apiKaryawan, authToken, getToken } from "./api";
 
+// GET AS POST ALIAS FETCHING DATA
+export async function fetchKaryawan() {
+  const res = await apiKaryawan.post('/detail-karyawan', {
+    token: getToken
+  })
+
+  return res.data.results;
+}
+
+export async function fetchAbsensiKaryawan(id) {
+  const res = await apiKaryawan.post(`/absensi-karyawan/${id}`, {
+    token: getToken
+  })
+  const resData = res.data;
+
+  return resData.results;
+}
+
+export async function fetchCekAbsensiHarianKaryawan() {
+  const res = await apiKaryawan.post(`/cek-absensi-harian/${authToken().id}`, {
+    token: getToken
+  })
+
+  return res.data;
+}
+
+//POST
 export async function handleLoginUser(username, password) {
   const res = await apiKaryawan.post('/login', {
     username: username,
@@ -22,37 +49,6 @@ export async function handleAddKaryawan(karyawan) {
   return res.data
 }
 
-export async function handleUpdateKaryawan(karyawan) {
-  const { id, nama, alamat, no_telp, status } = karyawan
-
-  const res = await apiKaryawan.put(`/update-karyawan/${id}`, {
-    nama: nama,
-    alamat: alamat,
-    no_telp: no_telp,
-    status: status,
-    token: getToken
-  })
-
-  return res.data
-}
-
-export async function fetchKaryawan() {
-  const res = await apiKaryawan.post('/detail-karyawan', {
-    token: getToken
-  })
-
-  return res.data.results;
-}
-
-export async function fetchAbsensiKaryawan(id) {
-  const res = await apiKaryawan.post(`/absensi-karyawan/${id}`, {
-    token: getToken
-  })
-  const resData = res.data;
-
-  return resData.results;
-}
-
 export async function handleAbsensiHarian(file) {
   const formData = new FormData();
 
@@ -68,16 +64,23 @@ export async function handleAbsensiHarian(file) {
   return res.data;
 }
 
-export async function fetchCekAbsensiHarianKaryawan() {
-  const res = await apiKaryawan.post(`/cek-absensi-harian/${authToken().id}`, {
+//PUT
+export async function handleUpdateKaryawan(karyawan) {
+  const { id, nama, alamat, no_telp, status } = karyawan
+
+  const res = await apiKaryawan.put(`/update-karyawan/${id}`, {
+    nama: nama,
+    alamat: alamat,
+    no_telp: no_telp,
+    status: status,
     token: getToken
   })
 
-  return res.data;
+  return res.data
 }
 
 export async function handleChangePassword({ password, newPassword, confirmPassword }) {
-  const res = await apiKaryawan.post(`/change-password/${authToken().id}`, {
+  const res = await apiKaryawan.put(`/change-password/${authToken().id}`, {
     password,
     newPassword,
     confirmPassword,
